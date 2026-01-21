@@ -1,0 +1,166 @@
+create database SafeMove
+
+/* =========================
+   CUSTOMER & USER
+   ========================= */
+
+CREATE TABLE Customer (
+    customer_id INT IDENTITY PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name NVARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE Admin (
+    admin_id INT IDENTITY PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name NVARCHAR(100),
+    phone VARCHAR(20)
+);
+
+/* =========================
+   STAFF & ACCOUNT
+   ========================= */
+
+CREATE TABLE Staff (
+    staff_id INT IDENTITY PRIMARY KEY,
+    name_staff NVARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    position NVARCHAR(50),
+    status NVARCHAR(30) NOT NULL
+);
+
+CREATE TABLE Staff_Account (
+    staff_acc_id INT IDENTITY PRIMARY KEY,
+    leader_staff_id INT NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    CONSTRAINT FK_StaffAccount_Staff
+        FOREIGN KEY (leader_staff_id) REFERENCES Staff(staff_id)
+);
+
+/* =========================
+   VEHICLE TYPE & VEHICLE
+   ========================= */
+
+CREATE TABLE Vehicle_Type (
+    vehicle_type_id INT IDENTITY PRIMARY KEY,
+    name NVARCHAR(100) NOT NULL UNIQUE,
+    capacity INT NOT NULL,
+    description NVARCHAR(255)
+);
+
+CREATE TABLE Vehicle (
+    vehicle_id INT IDENTITY PRIMARY KEY,
+    vehicle_manager_staff_id INT NOT NULL UNIQUE,
+    vehicle_type_id INT NOT NULL,
+    plate_number VARCHAR(20) NOT NULL UNIQUE,
+    status NVARCHAR(30) NOT NULL,
+    CONSTRAINT FK_Vehicle_Staff
+        FOREIGN KEY (vehicle_manager_staff_id) REFERENCES Staff(staff_id),
+    CONSTRAINT FK_Vehicle_Type
+        FOREIGN KEY (vehicle_type_id) REFERENCES Vehicle_Type(vehicle_type_id)
+);
+
+/* =========================
+   SERVICE & PRICE
+   ========================= */
+
+CREATE TABLE Service (
+    service_id INT IDENTITY PRIMARY KEY,
+    vehicle_type_id INT NOT NULL UNIQUE,
+    service_name NVARCHAR(100) NOT NULL,
+    description NVARCHAR(255),
+    base_price DECIMAL(12,2) NOT NULL,
+    CONSTRAINT FK_Service_VehicleType
+        FOREIGN KEY (vehicle_type_id) REFERENCES Vehicle_Type(vehicle_type_id)
+);
+
+CREATE TABLE Price_Table (
+    price_id INT IDENTITY PRIMARY KEY,
+    service_id INT NOT NULL,
+    min_distance_km DECIMAL(6,2) NOT NULL,
+    max_distance_km DECIMAL(6,2) NOT NULL,
+    price_per_km DECIMAL(12,2) NOT NULL,
+    CONSTRAINT FK_Price_Service
+        FOREIGN KEY (service_id) REFERENCES Service(service_id),
+    CONSTRAINT CK_Distance_Range
+        CHECK (min_distance_km < max_distance_km)
+);
+
+/* =========================
+   SURVEY REQUEST
+   ========================= */
+
+CREATE TABLE Survey_Request (
+    s_request_id INT IDENTITY PRIMARY KEY,
+    customer_id INT NOT NULL,
+    service_id INT NOT NULL,
+    pickup_address NVARCHAR(255) NOT NULL,
+    destination_address NVARCHAR(255) NOT NULL,
+    start_date DATETIME NOT NULL,
+    num_staff INT NOT NULL CHECK (num_staff > 0),
+    created_date DATETIME DEFAULT GETDATE(),
+    estimated_price DECIMAL(12,2),
+    estimated_distance_km DECIMAL(6,2),
+    status NVARCHAR(30) NOT NULL,
+    CONSTRAINT FK_Survey_Customer
+        FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
+    CONSTRAINT FK_Survey_Service
+        FOREIGN KEY (service_id) REFERENCES Service(service_id)
+);
+
+/* =========================
+   CONTRACT
+   ========================= */
+
+CREATE TABLE Contract (
+    contract_id INT IDENTITY PRIMARY KEY,
+    s_request_id INT NOT NULL UNIQUE,
+    num_staff INT NOT NULL CHECK (num_staff > 0),
+    deposit_amount DECIMAL(12,2) NOT NULL CHECK (deposit_amount >= 0),
+    total_amount DECIMAL(12,2) NOT NULL CHECK (total_amount >= 0),
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL,
+    status NVARCHAR(30) NOT NULL,
+    vehicle_id INT NULL,
+    CONSTRAINT FK_Contract_Survey
+        FOREIGN KEY (s_request_id) REFERENCES Survey_Request(s_request_id),
+    CONSTRAINT FK_Contract_Vehicle
+        FOREIGN KEY (vehicle_id) REFERENCES Vehicle(vehicle_id),
+    CONSTRAINT CK_Contract_Date
+        CHECK (end_date >= start_date)
+);
+
+/* =========================
+   CONTRACT - STAFF
+   ========================= */
+
+CREATE TABLE Contract_Staff (
+    contract_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    PRIMARY KEY (contract_id, staff_id),
+    CONSTRAINT FK_CS_Contract
+        FOREIGN KEY (contract_id) REFERENCES Contract(contract_id),
+    CONSTRAINT FK_CS_Staff
+        FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
+);
+
+/* =========================
+   DAMAGE REPORT
+   ========================= */
+
+CREATE TABLE Report_Damage (
+    damage_id INT IDENTITY PRIMARY KEY,
+    contract_id INT NOT NULL,
+    cause NVARCHAR(255) NOT NULL,
+    responsible_staff_id INT NOT NULL,
+    description NVARCHAR(255),
+    compensation DECIMAL(12,2) NOT NULL CHECK (compensation >= 0),
+    CONSTRAINT FK_Damage_Contract
+        FOREIGN KEY (contract_id) REFERENCES Contract(contract_id),
+    CONSTRAINT FK_Damage_Staff
+        FOREIGN KEY (responsible_staff_id) REFERENCES Staff(staff_id)
+);
