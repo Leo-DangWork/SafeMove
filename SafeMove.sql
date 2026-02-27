@@ -183,10 +183,25 @@ CREATE TABLE Report_Damage (
     cause NVARCHAR(255) NOT NULL,
     [description] NVARCHAR(255),
     compensation DECIMAL(12,2) NOT NULL CHECK (compensation >= 0),
-
     CONSTRAINT FK_Damage_Contract
         FOREIGN KEY (contract_id) REFERENCES Contract(contract_id),
-
     CONSTRAINT FK_Damage_Staff
         FOREIGN KEY (responsible_staff_id) REFERENCES Staff(staff_id)
 );
+/* ===============================
+   12. PAYMENT
+   =============================== */
+CREATE TABLE Payment (
+    payment_id INT IDENTITY(1,1) PRIMARY KEY,
+    contract_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_date DATETIME NOT NULL,
+    payment_method VARCHAR(10) NOT NULL,
+    status VARCHAR(10) NOT NULL DEFAULT 'pending',
+    CONSTRAINT FK_Payment_Contract FOREIGN KEY (contract_id) REFERENCES Contract(contract_id),
+    CONSTRAINT CHK_Payment_method CHECK (payment_method IN ('cash', 'transfer', 'card')),
+    CONSTRAINT CHK_Payment_status CHECK (status IN ('pending', 'completed', 'failed'))
+);
+
+
+
