@@ -10,6 +10,7 @@ package model;
  */
 public class Customer {
     private int customerId;
+    private int accountId;
     private String username;
     private String password;
     private String fullName;
@@ -18,8 +19,9 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(int customerId, String username, String password, String fullName, String phone) {
+    public Customer(int customerId, int accountId, String username, String password, String fullName, String phone) {
         this.customerId = customerId;
+        this.accountId = accountId;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -32,6 +34,14 @@ public class Customer {
 
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
+    }
+
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     public String getUsername() {

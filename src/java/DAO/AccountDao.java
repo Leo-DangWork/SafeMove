@@ -89,21 +89,32 @@ public class AccountDao extends DButil{
     }
 
     // 4. INSERT
-    public boolean insert(Account a) {
+    public int insert(Account a) {
+
         String sql = "INSERT INTO Account (username, password, role, status) VALUES (?, ?, ?, ?)";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+
+        try (PreparedStatement ps = connection.prepareStatement(sql, 
+                Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setString(1, a.getUsername());
             ps.setString(2, a.getPassword());
             ps.setString(3, a.getRole());
             ps.setString(4, a.getStatus());
 
-            return ps.executeUpdate() > 0;
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1); // trả về account_id
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+
+        return -1; // lỗi
     }
 
     // 5. UPDATE
@@ -139,5 +150,25 @@ public class AccountDao extends DButil{
         }
         return false;
     }
+    // 7. checkUsernameExists
+    public boolean checkUsernameExists(String username) {
+
+    String sql = "SELECT 1 FROM Account WHERE username = ?";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        ps.setString(1, username);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            return true;   // đã tồn tại
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return false;  // chưa tồn tại
+}
 }
 
