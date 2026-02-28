@@ -4,13 +4,13 @@
  */
 package DAO;
 import model.Contract;
-import utils.DButil;
 import java.sql.*;
+import utils.DButil;
 /**
  *
  * @author Dzung
  */
-public class ContractDAO {
+public class ContractDAO extends DButil{
     public void createContract(Contract c) throws Exception {
         String sql = """
             INSERT INTO Contract
@@ -19,8 +19,7 @@ public class ContractDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, c.getSurveyRequestId());
             ps.setInt(2, c.getNumStaff());
@@ -37,9 +36,7 @@ public class ContractDAO {
 
     public void updateStatus(int contractId, String status) throws Exception {
         String sql = "UPDATE Contract SET status = ? WHERE contract_id = ?";
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, contractId);
             ps.executeUpdate();

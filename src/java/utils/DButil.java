@@ -3,30 +3,37 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package utils;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author Dzung
  */
 public class DButil {
-    private static String url = "jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;"
-                                + "databaseName=SafeMove;"
-                                + "encrypt=false;trustServerCertificate=true";
-    private static String user = "sa";
-    private static String pass = "123456";
-
-    static {
+    protected Connection connection;
+    public DButil() {
+        //@Students: You are not allowed to edit this method  
         try {
+            Properties properties = new Properties();
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("../ConnectDB.properties");
+            try {
+                properties.load(inputStream);
+            } catch (IOException ex) {
+                Logger.getLogger(DButil.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            String user = properties.getProperty("userID");
+            String pass = properties.getProperty("password");
+            String url = properties.getProperty("url");
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot load SQL Server Driver", e);
+            connection = DriverManager.getConnection(url, user, pass);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(DButil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public static Connection getConnection() throws SQLException{
-        return DriverManager.getConnection(url, user, pass);
-    }
-
 }

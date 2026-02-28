@@ -13,13 +13,12 @@ import java.sql.*;
  *
  * @author Dzung
  */
-public class ServiceDAO {
+public class ServiceDAO extends DButil{
     public List<Service> getAll() throws Exception {
         List<Service> list = new ArrayList<>();
         String sql = "SELECT * FROM Service";
 
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {

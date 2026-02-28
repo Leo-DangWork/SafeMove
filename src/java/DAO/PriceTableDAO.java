@@ -9,7 +9,7 @@ import java.sql.*;
  *
  * @author Dzung
  */
-public class PriceTableDAO {
+public class PriceTableDAO extends DButil{
      public double calculatePrice(int serviceId, double distanceKm) throws Exception {
         String sql = """
             SELECT price_per_km
@@ -18,8 +18,7 @@ public class PriceTableDAO {
               AND ? BETWEEN min_distance_km AND max_distance_km
         """;
 
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, serviceId);
             ps.setDouble(2, distanceKm);

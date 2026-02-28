@@ -10,7 +10,7 @@ import java.sql.*;
  *
  * @author Dzung
  */
-public class VehicleDAO {
+public class VehicleDAO extends DButil{
     public Vehicle findAvailableVehicleByType(int vehicleTypeId) throws Exception {
         String sql = """
             SELECT TOP 1 * FROM Vehicle
@@ -18,8 +18,7 @@ public class VehicleDAO {
               AND status = 'AVAILABLE'
         """;
 
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, vehicleTypeId);
             ResultSet rs = ps.executeQuery();

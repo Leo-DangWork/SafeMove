@@ -10,7 +10,7 @@ import java.sql.*;
  *
  * @author Dzung
  */
-public class ReportDamageDAO {
+public class ReportDamageDAO extends DButil{
     public void reportDamage(ReportDamage r) throws Exception {
         String sql = """
             INSERT INTO Report_Damage
@@ -18,8 +18,7 @@ public class ReportDamageDAO {
             VALUES (?, ?, ?, ?, ?)
         """;
 
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, r.getContractId());
             ps.setString(2, r.getCause());

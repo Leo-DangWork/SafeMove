@@ -11,14 +11,13 @@ import utils.DButil;
  *
  * @author Dzung
  */
-public class CustomerDAO {
+public class CustomerDAO extends DButil{
     public void insert(Customer c) throws Exception {
         String sql = """
             INSERT INTO Customer(username, password, full_name, phone)
             VALUES (?, ?, ?, ?)
         """;
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, c.getUsername());
             ps.setString(2, c.getPassword());
@@ -30,8 +29,7 @@ public class CustomerDAO {
 
     public Customer findByUsername(String username) throws Exception {
         String sql = "SELECT * FROM Customer WHERE username = ?";
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();

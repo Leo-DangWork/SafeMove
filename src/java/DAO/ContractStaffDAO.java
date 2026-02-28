@@ -10,11 +10,10 @@ import java.sql.*;
  *
  * @author Dzung
  */
-public class ContractStaffDAO {
+public class ContractStaffDAO extends DButil{
     public void assignStaff(ContractStaff cs) throws Exception {
         String sql = "INSERT INTO Contract_Staff(contract_id, staff_id) VALUES (?, ?)";
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, cs.getContractId());
             ps.setInt(2, cs.getStaffId());

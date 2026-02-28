@@ -11,7 +11,7 @@ import model.SurveyRequest;
  *
  * @author Dzung
  */
-public class SurveyRequestDAO {
+public class SurveyRequestDAO extends DButil{
     public int insert(SurveyRequest s) throws Exception {
         String sql = """
             INSERT INTO Survey_Request
@@ -20,8 +20,7 @@ public class SurveyRequestDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        try (Connection con = DButil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, s.getCustomerId());
             ps.setInt(2, s.getServiceId());
