@@ -21,33 +21,47 @@ import java.io.IOException;
 public class AuthorizationFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-        HttpSession session = req.getSession(false);
 
+        HttpSession session = req.getSession(false);
+        String uri = req.getRequestURI().substring(req.getContextPath().length());
+
+        // Cho phép truy cập login và register
+        if (uri.equals("/login") || uri.equals("/register")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Nếu chưa login
         if (session == null || session.getAttribute("currentUser") == null) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        Account u = (Account) session.getAttribute("currentUser");
-        String uri = req.getRequestURI();
-        if (uri.contains("/customer/") && !"CUSTOMER".equals(u.getRole())) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-        if (uri.contains("/staff/") && !"STAFF".equals(u.getRole())) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-        if (uri.contains("/admin/") && !"ADMIN".equals(u.getRole())) {
+        Account user = (Account) session.getAttribute("currentUser");
+        String role = user.getRole();
+
+        // Phân quyền theo role
+        if (uri.startsWith("/admin") && !"ADMIN".equals(role)) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
+        if (uri.startsWith("/staff") && !"STAFF".equals(role)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        if (uri.startsWith("/customer") && !"CUSTOMER".equals(role)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        
         chain.doFilter(request, response);
-    }
-    
+    }   
 }
 
