@@ -11,14 +11,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.annotation.WebServlet;
+
 
 /**
  *
  * @author Dzung
  */
 
-@WebServlet("/register")
+
 public class Register extends HttpServlet {
    
     /** 
@@ -56,8 +56,7 @@ public class Register extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/register.jsp")
-           .forward(request, response);
+        processRequest(request, response);
     } 
 
     /** 
@@ -70,8 +69,7 @@ public class Register extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("/view/register.jsp")
-           .forward(request, response);
+        processRequest(request, response);
     }
 
     /** 

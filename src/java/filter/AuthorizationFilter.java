@@ -7,7 +7,7 @@ package filter;
 import jakarta.servlet.Filter;
 import model.Account;
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
+//import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,7 +17,7 @@ import java.io.IOException;
  *
  * @author Dzung
  */
-@WebFilter(urlPatterns = {"/customer/*", "/staff/*", "/admin/*"})
+//@WebFilter(urlPatterns = {"/customer/*", "/staff/*", "/admin/*"})
 public class AuthorizationFilter implements Filter {
 
     @Override
