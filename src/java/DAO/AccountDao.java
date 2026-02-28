@@ -17,7 +17,7 @@ public class AccountDao extends DButil{
     
 
     // 1. LOGIN
-    public Account login(String username, String password) {
+    public Account checkLogin(String username, String password) {
         String sql = "SELECT * FROM Account WHERE username = ? AND password = ? AND status = 'active'";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);

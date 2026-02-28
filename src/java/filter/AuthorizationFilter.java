@@ -7,7 +7,6 @@ package filter;
 import jakarta.servlet.Filter;
 import model.Account;
 import jakarta.servlet.*;
-//import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,7 +16,6 @@ import java.io.IOException;
  *
  * @author Dzung
  */
-//@WebFilter(urlPatterns = {"/customer/*", "/staff/*", "/admin/*"})
 public class AuthorizationFilter implements Filter {
 
     @Override
@@ -28,10 +26,17 @@ public class AuthorizationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         HttpSession session = req.getSession(false);
+        String contextPath = req.getContextPath();
         String uri = req.getRequestURI().substring(req.getContextPath().length());
-
+        
+        if (uri.equals("") || uri.equals("/")) {
+            resp.sendRedirect(contextPath + "/home");
+            return;
+        }
         // Cho phép truy cập login và register
-        if (uri.equals("/login") || uri.equals("/register")) {
+        if (    uri.equals("/home") 
+                || uri.equals("/login") 
+                || uri.equals("/register")) {
             chain.doFilter(request, response);
             return;
         }

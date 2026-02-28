@@ -12,6 +12,20 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <%
+            String error = (String)request.getAttribute("error");
+            if (error!=null){
+            %>
+            <p style="color: red"><%=error%></p>
+            <%
+            }
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+        %>
+        <form id="formLogin" action="Login">
+            Username: <input type="text" name="username" id="user" value="<%=username==null?"":username%>"/><br/>
+            Password: <input type="password" name="password" id="pass" value="<%=password==null?"":password%>"/><br/>
+            <input type="submit" value="Login" id="btnLogin"/>
+        </form>
     </body>
 </html>

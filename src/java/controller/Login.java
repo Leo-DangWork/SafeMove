@@ -4,13 +4,15 @@
  */
 
 package controller;
-
+import model.Account;
+import DAO.AccountDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -66,7 +68,36 @@ public class Login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        AccountDao dao = new AccountDao();
+        Account account = dao.checkLogin(username, password);
+
+        if (account != null) {
+
+            HttpSession session = request.getSession();
+            session.setAttribute("currentUser", account);
+
+            String role = account.getRole();
+
+            if ("ADMIN".equals(role)) {
+                response.sendRedirect("admin");
+            }                       
+            else if ("STAFF".equals(role)) {
+                response.sendRedirect("staff");
+            } 
+            else if ("CUSTOMER".equals(role)) {
+                response.sendRedirect("customer");
+            } 
+            else {
+                response.sendRedirect("home");
+            }
+
+        } else {
+            request.setAttribute("error", "Sai tài khoản hoặc mật khẩu");
+            request.getRequestDispatcher("view/login.jsp").forward(request, response);
+        }
     }
 
     /** 
