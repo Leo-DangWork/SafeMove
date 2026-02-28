@@ -34,15 +34,15 @@ public class AuthorizationFilter implements Filter {
         Account u = (Account) session.getAttribute("currentUser");
         String uri = req.getRequestURI();
         if (uri.contains("/customer/") && !"CUSTOMER".equals(u.getRole())) {
-            resp.sendError(403);
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
         if (uri.contains("/staff/") && !"STAFF".equals(u.getRole())) {
-            resp.sendError(403);
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
         if (uri.contains("/admin/") && !"ADMIN".equals(u.getRole())) {
-            resp.sendError(403);
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -50,3 +50,4 @@ public class AuthorizationFilter implements Filter {
     }
     
 }
+
